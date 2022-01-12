@@ -1,15 +1,24 @@
 package com.tenniscourts.reservations;
 
 import com.tenniscourts.config.BaseRestController;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequestMapping("/reservation")
 @AllArgsConstructor
+@Api("Rest API reservation tennis court")
+@CrossOrigin(value = "*")
 public class ReservationController extends BaseRestController {
 
     private final ReservationService reservationService;
 
-    public ResponseEntity<Void> bookReservation(CreateReservationRequestDTO createReservationRequestDTO) {
+    @PostMapping
+    @ApiOperation(value = "Save a new reservation")
+    public ResponseEntity<Void> bookReservation(@RequestBody CreateReservationRequestDTO createReservationRequestDTO) {
         return ResponseEntity.created(locationByEntity(reservationService.bookReservation(createReservationRequestDTO).getId())).build();
     }
 
@@ -21,7 +30,8 @@ public class ReservationController extends BaseRestController {
         return ResponseEntity.ok(reservationService.cancelReservation(reservationId));
     }
 
-    public ResponseEntity<ReservationDTO> rescheduleReservation(Long reservationId, Long scheduleId) {
-        return ResponseEntity.ok(reservationService.rescheduleReservation(reservationId, scheduleId));
+    @PostMapping("/reschedule")
+    public ResponseEntity<ReservationDTO> rescheduleReservation(@RequestBody RescheduleReservationDTO rescheduleReservationDTO) {
+        return ResponseEntity.ok(reservationService.rescheduleReservation(rescheduleReservationDTO));
     }
 }
